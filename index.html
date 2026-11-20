@@ -83,12 +83,17 @@ function restoreSelection() {
   } catch { return []; }
 }
 const selected = new Set(restoreSelection());
+let sheetReady=false;
+let submitting=false;
+let receipt='';
+let pending;
 const selectedPeople = () => creators.filter(person=>selected.has(person.handle));
 const selectionButton = person => `<button class="selection-button" type="button" data-select="${esc(person.handle)}" aria-pressed="${selected.has(person.handle)}">${selected.has(person.handle)?'선정됨':'선정'}<span hidden> ${esc(person.name)}</span></button>`;
 function renderSelectionSummary() {
   const people = selectedPeople();
   selectionBar.hidden = people.length === 0;
   selectionBar.innerHTML = `<div class="selection-stats" aria-live="polite"><span>선정 <strong>${people.length}명</strong></span><span>진행 비용 합계 <strong>${won.format(people.reduce((sum,person)=>sum+person.price,0))}</strong></span></div><div class="selection-actions"><a class="button" href="${location.hash==='#selected'?'#':'#selected'}">${location.hash==='#selected'?'전체 후보 보기':'선정 인원 보기'}</a><button class="selection-export" type="button">선정 명단 CSV 받기</button></div>`;
+  if(sheetReady) selectionBar.innerHTML += `<button class="selection-export" type="button" data-submit ${submitting?'disabled':''}>${submitting?'시트에 기록 중…':'선정 확정하기'}</button><span role="status">${esc(receipt)}</span>`;
 }
 function renderList() {
   const filtered=location.hash==='#selected';
@@ -143,6 +148,7 @@ content.addEventListener('click',event=>{
   const selection=event.target.closest('button[data-select]');
   if (selection) {
     const handle=selection.dataset.select;
+    receipt='';
     if (selected.has(handle)) selected.delete(handle);
     else selected.add(handle);
     try { window.localStorage.setItem(selectionKey,JSON.stringify([...selected])); } catch {}
@@ -167,7 +173,26 @@ content.addEventListener('click',event=>{
   button.replaceWith(frame);
   frame.focus();
 });
-selectionBar.addEventListener('click',event=>{
+selectionBar.addEventListener('click',async event=>{
+  if(event.target.closest('[data-submit]')) {
+    if(submitting) return;
+    const handles=selectedPeople().map(person=>person.handle);
+    if(!handles.length) return;
+    const signature=JSON.stringify(handles);
+    if(pending?.signature!==signature) pending={signature,id:crypto.randomUUID()};
+    if(pending.saved) { receipt='이미 시트에 기록됐어요.';renderSelectionSummary();return; }
+    submitting=true;
+    receipt='';
+    renderSelectionSummary();
+    try {
+      const response=await fetch('/api/selection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:pending.id,handles})});
+      if(!response.ok || !(await response.json()).ok) throw new Error('Sheet write failed');
+      pending.saved=true;
+      receipt='선정 결과를 시트에 기록했어요.';
+    } catch { receipt='시트에 기록하지 못했어요. 다시 시도해 주세요.'; }
+    finally { submitting=false;renderSelectionSummary(); }
+    return;
+  }
   if(!event.target.closest('.selection-export')) return;
   const people=selectedPeople();
   const rows=[['이름','인스타그램 계정','프로필','진행 비용 (원)'],...people.map(person=>[
@@ -183,6 +208,10 @@ selectionBar.addEventListener('click',event=>{
 });
 window.addEventListener('hashchange',render);
 render();
+if(location.protocol==='https:') fetch('/api/selection').then(response=>response.json()).then(({ready})=>{
+  sheetReady=ready===true;
+  if(sheetReady) renderSelectionSummary();
+}).catch(()=>{});
 </script>
 </body>
 </html>
