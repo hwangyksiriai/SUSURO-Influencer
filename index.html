@@ -76,14 +76,15 @@ function reelCard(url,label,person) {
   <div class="reel-body"><strong>${esc(label)}</strong><a href="${esc(url)}" ${linkAttrs}>인스타그램 원본</a></div></article>`;
 }
 function renderProfile(person,index) {
+  const profileUrl = 'https://www.instagram.com/' + encodeURIComponent(person.handle) + '/';
   const cards = [reelCard(person.reel,person.label,person),...person.extras.map((url,i)=>reelCard(url,'추가 릴스 '+(i+1)))];
   content.innerHTML = `<div class="detail-layout">${directory(person)}<div>${pager(index)}<article class="profile"><img class="portrait" src="${esc(person.cover)}" alt="${esc(person.name)} 대표 이미지">
     <div class="bio"><p class="eyebrow">${campaignLogo} · 추천 크리에이터</p><h1>${esc(person.name)}</h1>
-    <div class="details"><a href="https://www.instagram.com/${encodeURIComponent(person.handle)}/" ${linkAttrs}>@${esc(person.handle)}</a><span>팔로워 <strong title="${person.followers.toLocaleString('ko-KR')}명">${count(person)}</strong></span></div>
+    <div class="details"><a href="${profileUrl}" ${linkAttrs}>@${esc(person.handle)}</a><span>팔로워 <strong title="${person.followers.toLocaleString('ko-KR')}명">${count(person)}</strong></span></div>
     <section class="reason"><h2>추천 이유</h2><p>${esc(person.reason)}</p></section>
     <div class="terms" aria-label="기존 명단의 진행 정보">
       <div class="tags">${person.note?`<span class="tag">${esc(person.note)}</span>`:''}${person.badge?`<span class="tag badge">${esc(person.badge)}</span>`:''}</div>
-      <p>진행 비용 <strong>${won.format(person.price)}</strong></p>
+      <p>진행 비용 <strong>${won.format(person.price)}</strong><a href="${profileUrl}" ${linkAttrs}>인스타그램 계정 보기</a></p>
     </div></div></article>
     <section class="reels"><h2>대표 릴스</h2><div class="reel-grid">${cards.join('')}</div></section>${pager(index,true)}</div></div>`;
   const list = content.querySelector('.directory-list');
