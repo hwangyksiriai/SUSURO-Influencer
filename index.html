@@ -92,7 +92,7 @@ const selectionButton = person => `<button class="selection-button" type="button
 function renderSelectionSummary() {
   const people = selectedPeople();
   selectionBar.hidden = people.length === 0;
-  selectionBar.innerHTML = `<div class="selection-stats" aria-live="polite"><span>선정 <strong>${people.length}명</strong></span><span>진행 비용 합계 <strong>${won.format(people.reduce((sum,person)=>sum+person.price,0))}</strong></span></div><div class="selection-actions"><a class="button" href="${location.hash==='#selected'?'#':'#selected'}">${location.hash==='#selected'?'전체 후보 보기':'선정 인원 보기'}</a><button class="selection-export" type="button">선정 명단 CSV 받기</button></div>`;
+  selectionBar.innerHTML = `<div class="selection-stats" aria-live="polite"><span>선정 <strong>${people.length}명</strong></span><span>진행 비용 합계 <strong>${won.format(people.reduce((sum,person)=>sum+person.price,0))}</strong></span></div><div class="selection-actions"><a class="button" href="${location.hash==='#selected'?'#':'#selected'}">${location.hash==='#selected'?'전체 후보 보기':'선정 인원 보기'}</a></div>`;
   if(sheetReady) selectionBar.innerHTML += `<button class="selection-export" type="button" data-submit ${submitting?'disabled':''}>${submitting?'시트에 기록 중…':'선정 확정하기'}</button><span role="status">${esc(receipt)}</span>`;
 }
 function renderList() {
@@ -193,18 +193,6 @@ selectionBar.addEventListener('click',async event=>{
     finally { submitting=false;renderSelectionSummary(); }
     return;
   }
-  if(!event.target.closest('.selection-export')) return;
-  const people=selectedPeople();
-  const rows=[['이름','인스타그램 계정','프로필','진행 비용 (원)'],...people.map(person=>[
-    person.name,person.handle,'https://www.instagram.com/'+encodeURIComponent(person.handle)+'/',person.price
-  ]),['진행 비용 합계','','',people.reduce((sum,person)=>sum+person.price,0)]];
-  const csv=rows.map(row=>row.map(value=>'"'+String(value).replaceAll('"','""')+'"').join(',')).join('\r\n');
-  const url=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));
-  const download=document.createElement('a');
-  download.href=url;
-  download.download='SUSURO-선정-명단.csv';
-  download.click();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 window.addEventListener('hashchange',render);
 render();
