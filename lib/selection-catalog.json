@@ -1,28 +1,8 @@
 [
   {
-    "handle": "minjichu_",
-    "name": "밍벨",
-    "price": 780000
-  },
-  {
-    "handle": "3.3.c",
-    "name": "Ziny",
-    "price": 1650000
-  },
-  {
-    "handle": "k._.ny",
-    "name": "k._.ny",
-    "price": 1400000
-  },
-  {
     "handle": "xnexnes",
     "name": "Yunii",
     "price": 950000
-  },
-  {
-    "handle": "hacuming",
-    "name": "하경",
-    "price": 900000
   },
   {
     "handle": "cheristyle_",
@@ -30,19 +10,9 @@
     "price": 2150000
   },
   {
-    "handle": "soriwonn",
-    "name": "리원",
-    "price": 800000
-  },
-  {
     "handle": "its_x_yeseo",
     "name": "예서",
     "price": 1000000
-  },
-  {
-    "handle": "a12486",
-    "name": "a12486",
-    "price": 1300000
   },
   {
     "handle": "som_ssu04",
@@ -60,11 +30,6 @@
     "price": 2400000
   },
   {
-    "handle": "veryzoey",
-    "name": "veryzoey",
-    "price": 700000
-  },
-  {
     "handle": "tae__e.un",
     "name": "태은",
     "price": 3600000
@@ -73,11 +38,6 @@
     "handle": "yoo__si",
     "name": "유시은",
     "price": 14000000
-  },
-  {
-    "handle": "wo.0z",
-    "name": "김지우",
-    "price": 1450000
   },
   {
     "handle": "parkjininn",
@@ -98,10 +58,5 @@
     "handle": "park.marron",
     "name": "박마롱¨̮",
     "price": 950000
-  },
-  {
-    "handle": "67.48",
-    "name": "K",
-    "price": 900000
   }
 ]
